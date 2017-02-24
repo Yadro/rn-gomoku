@@ -3,6 +3,7 @@ import {
   View,
   Text,
 } from 'react-native';
+import Field from "./Field";
 
 interface AppP {
 }
@@ -16,8 +17,9 @@ export default class App extends React.Component<AppP, AppS> {
   }
 
   render() {
-    return <View>
-      <Text>Hey</Text>
+    return <View style={{flex: 1}}>
+      <Field />
+      <Text>Complete</Text>
     </View>
   }
 }
