@@ -3,7 +3,7 @@ import {
   View,
   Text,
 } from 'react-native';
-import Field from "./Field";
+import Field from "./field";
 
 interface AppP {
 }
