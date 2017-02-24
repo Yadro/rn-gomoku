@@ -11,6 +11,7 @@ import {range} from "./util";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {FieldItem, UserEnum} from "./redux/field";
+import {API} from "./api";
 
 const count = 10;
 const size = 20;
@@ -50,6 +51,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       position: touch,
       user: UserEnum.you
     });
+    API.postStep(1, 1, `${touch.x};${touch.y}`);
   };
 
   render() {
