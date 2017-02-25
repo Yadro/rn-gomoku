@@ -1,7 +1,7 @@
 
 export enum UserEnum {
-  you,
-  younot,
+  server,
+  client,
 }
 
 export interface FieldItem {

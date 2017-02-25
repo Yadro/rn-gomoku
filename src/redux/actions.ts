@@ -12,4 +12,12 @@ export const actions = {
   clear() {
     store.dispatch({type: 'CLEAR'});
   },
+
+  setSession(session) {
+    store.dispatch({type: 'SET-SESSION', session});
+  },
+
+  setStatus(userType) {
+    store.dispatch({type: 'SET-USER-TYPE', user: userType});
+  },
 };

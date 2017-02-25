@@ -36,7 +36,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
   componentWillMount() {
     this.unsubscribe = store.subscribe(() => {
-      this.setState({field: store.getState()});
+      this.setState({field: store.getState().field});
     });
     API.create().then(session => {
 
@@ -74,7 +74,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
     };
     actions.add({
       position: touch,
-      user: UserEnum.you
+      user: UserEnum.client
     });
     API.postStep(this.state.session, 1, `${touch.x};${touch.y}`)
       .then((response) => response.json())

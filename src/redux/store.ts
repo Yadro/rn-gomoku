@@ -1,9 +1,19 @@
-import {createStore} from 'redux';
+import {createStore, combineReducers} from 'redux';
 import field from './field';
+import serverInfo from './serverInfo';
 
 let store = createStore(
-  field,
-  null,
+  combineReducers({
+    field,
+    serverInfo,
+  }),
+  {
+    field: [],
+    serverInfo: {
+      session: -1,
+      user: -1,
+    }
+  },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__({/* options */})
 );
 

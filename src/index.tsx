@@ -6,30 +6,70 @@ import {
   TextInput,
 } from 'react-native';
 import Field from "./field";
+import store from "./redux/store";
+import {actions} from "./redux/actions";
+import {UserEnum} from "./redux/field";
 
 interface AppS {
   view: string;
   session;
+  sessionInfo;
+  field;
 }
 export default class App extends React.Component<any, AppS> {
+
+  unsubscribe;
 
   constructor(props) {
     super(props);
     this.state = {
       view: 'choose',
-      session: null
+      session: null,
+      sessionInfo: {},
+      field: []
     };
   }
+
+  componentWillMount() {
+    this.unsubscribe = store.subscribe(() => {
+      const {field, sessionInfo} = store.getState();
+      this.setState({
+        field,
+        sessionInfo,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  onChangeSession = ({nativeEvent: {text}}) => {
+    this.setState({
+      session: +text,
+      view: 'field',
+    });
+  };
+
+  connectBtn = (session) => () => {
+    actions.setSession(session);
+    actions.setStatus(UserEnum.client);
+  };
+
+  serverBtn = () => {
+    actions.setStatus(UserEnum.server);
+  };
 
   _renderChoose = session => {
     return (
       <View>
         <View>
-          <Button title='Server' onPress={() => null} />
+          <Button title='Server' onPress={this.serverBtn} />
         </View>
         <View>
-          <TextInput value={session}/>
-          <Button title='Connect' onPress={() => null} />
+          <TextInput value={session}
+                     onChange={this.onChangeSession}/>
+          <Button title='Connect' onPress={this.connectBtn(session)} />
         </View>
       </View>
     )
