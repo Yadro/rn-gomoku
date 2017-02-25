@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
   View,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Text,
+  Button,
   ScrollView,
   StyleSheet,
 } from 'react-native';
@@ -17,61 +17,62 @@ const count = 10;
 const size = 20;
 
 interface FieldP {
-  session;
-}
-interface FieldS {
   field: FieldItem[];
 }
+interface FieldS {
+  session;
+  user: UserEnum;
+  currentUser;
+}
 export default class Field extends React.Component<FieldP, FieldS> {
+  layout;
+
   constructor(props) {
     super(props);
+    const {serverInfo: {user, session}} = store.getState();
     this.state = {
-      field: []
+      session,
+      user,
+      currentUser: 0,
     };
   }
 
   componentWillMount() {
-    API.getSteps(this.props.session)
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        if (!(json && json.steps)) return;
-        actions.fillField(json.steps.map(e => {
-          const res = /(\d+);(\d+)/.exec(e.position);
-          if (!res) return {};
-          return {
-            position: {
-              x: +res[1],
-              y: +res[2],
-            },
-            user: e.user,
-          };
-        }));
-      })
-      .catch(e => console.error(e));
+    actions.fillField(API.getSteps(this.state.session));
   }
 
   fieldPress = ({nativeEvent: {pageX, pageY}}): void => {
+    const {currentUser, user, session} = this.state;
+    if (user !== currentUser) return;
+    const {y} = this.layout;
     const touch = {
       x: Math.floor(pageX / size),
-      y: Math.floor(pageY / size),
+      y: Math.floor((pageY - y) / size),
     };
     actions.add({
       position: touch,
-      user: UserEnum.client
+      user: user
     });
-    API.postStep(this.props.session, 1, `${touch.x};${touch.y}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-      })
-      .catch(e => {
-        console.error(e);
-      })
+    API.postStep(session, user, `${touch.x};${touch.y}`).then(res => {
+      this.setState({currentUser: res.user});
+      return API.getSteps(session);
+    })
+      .then(steps => actions.fillField(steps));
+  };
+
+  update = () => {
+    API.getCurrentUser(this.state.session).then(user => {
+      this.setState({currentUser: user});
+      if (this.state.user == user) {
+        API.getSteps(this.state.session)
+          .then(steps => actions.fillField(steps));
+      }
+    });
   };
 
   render() {
-    const {field} = this.state;
+    const {field} = this.props;
+    const {user, currentUser} = this.state;
     const fields = range(0, count).map(y => {
       return (
         <View key={y} style={css.row}>
@@ -79,7 +80,8 @@ export default class Field extends React.Component<FieldP, FieldS> {
             const style: any[] = [css.field];
             const item = field.find(e => equal(e.position, x, y));
             if (item) {
-              style.push(item.user == UserEnum.you ? css.fieldActiveYou : css.fieldActive);
+              console.log(item.user);
+              style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
             }
             return <View key={x} style={style}/>;
           })}
@@ -89,7 +91,11 @@ export default class Field extends React.Component<FieldP, FieldS> {
     return (
       <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
         <View>
-          {fields}
+          <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
+          <Button title="Refresh" onPress={this.update}/>
+          <View onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
+            {fields}
+          </View>
         </View>
       </TouchableWithoutFeedback>
     )

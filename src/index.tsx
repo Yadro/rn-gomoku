@@ -76,8 +76,9 @@ export default class App extends React.Component<any, AppS> {
     )
   };
 
-  _renderField = e => {
-    return <Field session={this.state.session}/>
+  _renderField = () => {
+    const {field} = this.state;
+    return <Field field={field}/>
   };
 
   render() {
@@ -85,7 +86,7 @@ export default class App extends React.Component<any, AppS> {
     return <View style={{flex: 1}}>
       {view == 'choose' ?
         this._renderChoose(session) :
-        this._renderField(1)
+        this._renderField()
       }
     </View>
   }
