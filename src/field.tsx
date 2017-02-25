@@ -17,54 +17,38 @@ const count = 10;
 const size = 20;
 
 interface FieldP {
+  session;
 }
 interface FieldS {
-  session: number;
   field: FieldItem[];
 }
 export default class Field extends React.Component<FieldP, FieldS> {
-
-  unsubscribe;
-
   constructor(props) {
     super(props);
     this.state = {
-      session: 1,
       field: []
     };
   }
 
   componentWillMount() {
-    this.unsubscribe = store.subscribe(() => {
-      this.setState({field: store.getState().field});
-    });
-    API.create().then(session => {
-
-      API.getSteps(session)
-        .then(response => response.json())
-        .then(json => {
-          console.log(json);
-          if (!(json && json.steps)) return;
-          actions.fillField(json.steps.map(e => {
-            const res = /(\d+);(\d+)/.exec(e.position);
-            if (!res) return {};
-            return {
-              position: {
-                x: +res[1],
-                y: +res[2],
-              },
-              user: e.user,
-            };
-          }));
-        })
-        .catch(e => console.error(e));
-
-      this.setState({session});
-    });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
+    API.getSteps(this.props.session)
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        if (!(json && json.steps)) return;
+        actions.fillField(json.steps.map(e => {
+          const res = /(\d+);(\d+)/.exec(e.position);
+          if (!res) return {};
+          return {
+            position: {
+              x: +res[1],
+              y: +res[2],
+            },
+            user: e.user,
+          };
+        }));
+      })
+      .catch(e => console.error(e));
   }
 
   fieldPress = ({nativeEvent: {pageX, pageY}}): void => {
@@ -76,7 +60,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       position: touch,
       user: UserEnum.client
     });
-    API.postStep(this.state.session, 1, `${touch.x};${touch.y}`)
+    API.postStep(this.props.session, 1, `${touch.x};${touch.y}`)
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);

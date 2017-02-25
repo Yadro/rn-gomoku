@@ -1,4 +1,5 @@
 import store from "./store";
+import {UserEnum} from "./field";
 
 export const actions = {
   add(field) {
@@ -13,11 +14,11 @@ export const actions = {
     store.dispatch({type: 'CLEAR'});
   },
 
-  setSession(session) {
-    store.dispatch({type: 'SET-SESSION', session});
+  asClient(session) {
+    store.dispatch({type: 'SET-PARAM', session, user: UserEnum.client});
   },
 
-  setStatus(userType) {
-    store.dispatch({type: 'SET-USER-TYPE', user: userType});
+  asServer(session) {
+    store.dispatch({type: 'SET-PARAM', session, user: UserEnum.server});
   },
 };

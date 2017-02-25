@@ -8,10 +8,8 @@ export interface ServerInfo {
 export default (state: ServerInfo, actions): ServerInfo => {
   const newState = Object.assign({}, state);
   switch (actions.type) {
-    case 'SET-SESSION':
+    case 'SET-PARAM':
       newState.session = actions.session;
-      return newState;
-    case 'SET-USER-TYPE':
       newState.user = actions.user;
       return newState;
   }

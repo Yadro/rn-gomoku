@@ -9,6 +9,7 @@ import Field from "./field";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {UserEnum} from "./redux/field";
+import {API} from "./api";
 
 interface AppS {
   view: string;
@@ -45,19 +46,19 @@ export default class App extends React.Component<any, AppS> {
   }
 
   onChangeSession = ({nativeEvent: {text}}) => {
-    this.setState({
-      session: +text,
-      view: 'field',
-    });
+    this.setState({session: text});
   };
 
   connectBtn = (session) => () => {
-    actions.setSession(session);
-    actions.setStatus(UserEnum.client);
+    actions.asClient(+session);
+    this.setState({view: 'game'});
   };
 
   serverBtn = () => {
-    actions.setStatus(UserEnum.server);
+    API.create().then(session => {
+      actions.asServer(+session);
+      this.setState({view: 'game'});
+    })
   };
 
   _renderChoose = session => {
@@ -76,7 +77,7 @@ export default class App extends React.Component<any, AppS> {
   };
 
   _renderField = e => {
-    return <Field/>
+    return <Field session={this.state.session}/>
   };
 
   render() {
