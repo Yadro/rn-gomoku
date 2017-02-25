@@ -38,24 +38,29 @@ export default class Field extends React.Component<FieldP, FieldS> {
     this.unsubscribe = store.subscribe(() => {
       this.setState({field: store.getState()});
     });
+    API.create().then(session => {
 
-    API.getSteps(this.state.session)
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        actions.fillField(json.steps.map(e => {
-          const res = /(\d+);(\d+)/.exec(e.position);
-          if (!res) return {};
-          return {
-            position: {
-              x: +res[1],
-              y: +res[2],
-            },
-            user: e.user,
-          };
-        }));
-      })
-      .catch(e => console.error(e));
+      API.getSteps(session)
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          if (!(json && json.steps)) return;
+          actions.fillField(json.steps.map(e => {
+            const res = /(\d+);(\d+)/.exec(e.position);
+            if (!res) return {};
+            return {
+              position: {
+                x: +res[1],
+                y: +res[2],
+              },
+              user: e.user,
+            };
+          }));
+        })
+        .catch(e => console.error(e));
+
+      this.setState({session});
+    });
   }
 
   componentWillUnmount() {
