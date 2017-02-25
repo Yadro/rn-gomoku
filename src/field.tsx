@@ -19,6 +19,7 @@ const size = 20;
 interface FieldP {
 }
 interface FieldS {
+  session: number;
   field: FieldItem[];
 }
 export default class Field extends React.Component<FieldP, FieldS> {
@@ -28,6 +29,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
   constructor(props) {
     super(props);
     this.state = {
+      session: 1,
       field: []
     };
   }
@@ -36,6 +38,24 @@ export default class Field extends React.Component<FieldP, FieldS> {
     this.unsubscribe = store.subscribe(() => {
       this.setState({field: store.getState()});
     });
+
+    API.getSteps(this.state.session)
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        actions.fillField(json.steps.map(e => {
+          const res = /(\d+);(\d+)/.exec(e.position);
+          if (!res) return {};
+          return {
+            position: {
+              x: +res[1],
+              y: +res[2],
+            },
+            user: e.user,
+          };
+        }));
+      })
+      .catch(e => console.error(e));
   }
 
   componentWillUnmount() {
@@ -51,7 +71,14 @@ export default class Field extends React.Component<FieldP, FieldS> {
       position: touch,
       user: UserEnum.you
     });
-    API.postStep(1, 1, `${touch.x};${touch.y}`);
+    API.postStep(this.state.session, 1, `${touch.x};${touch.y}`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+      })
+      .catch(e => {
+        console.error(e);
+      })
   };
 
   render() {

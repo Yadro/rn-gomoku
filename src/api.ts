@@ -1,5 +1,9 @@
 class Api {
-  url = 'http://localhost:3001';
+  url = 'http://10.0.3.2:3001';
+
+  getSteps(session) {
+    return fetch(this.url + '/step/' + session, {method: 'GET'});
+  }
 
   postStep(session, user, position) {
     return fetch(this.url + '/step', {

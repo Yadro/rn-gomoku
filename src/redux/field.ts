@@ -15,6 +15,9 @@ export default (state: FieldItem[], actions): FieldItem[] => {
     case 'ADD':
       newState.push(actions.field);
       return newState;
+    case 'FILL':
+      newState.push(...actions.fields);
+      return newState;
     case 'CLEAR':
       return [];
   }

@@ -5,6 +5,10 @@ export const actions = {
     store.dispatch({type: 'ADD', field});
   },
 
+  fillField(fields) {
+    store.dispatch({type: 'FILL', fields});
+  },
+
   clear() {
     store.dispatch({type: 'CLEAR'});
   },
