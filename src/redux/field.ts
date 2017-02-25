@@ -10,6 +10,7 @@ export interface FieldItem {
 }
 
 export default (state: FieldItem[], actions): FieldItem[] => {
+  state = state || [];
   const newState = state.slice();
   switch (actions.type) {
     case 'ADD':
