@@ -43,14 +43,14 @@ class Api {
       .catch(e => console.error(e));
   }
 
-  postStep(session, user, position) {
+  postStep(data) {
     return fetch(this.url + '/step', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({user, session, position})
+      body: JSON.stringify(data)
     })
       .then(response => response.json())
       .then(responseJson => {

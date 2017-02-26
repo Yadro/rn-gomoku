@@ -23,6 +23,7 @@ interface FieldS {
   session;
   user: UserEnum;
   currentUser;
+  wait;
 }
 export default class Field extends React.Component<FieldP, FieldS> {
   layout;
@@ -34,6 +35,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       session,
       user,
       currentUser: 0,
+      wait: false,
     };
   }
 
@@ -53,26 +55,35 @@ export default class Field extends React.Component<FieldP, FieldS> {
       position: touch,
       user: user
     });
-    API.postStep(session, user, `${touch.x};${touch.y}`).then(res => {
-      this.setState({currentUser: res.user});
-      return API.getSteps(session);
-    })
-      .then(steps => actions.fillField(steps));
+    this.setState({wait: true});
+    API.postStep({session, user, position: `${touch.x};${touch.y}`})
+      .then(res => {
+        this.setState({currentUser: res.user});
+        return API.getSteps(session);
+      })
+      .then(steps => {
+        actions.fillField(steps);
+        this.setState({wait: false});
+      });
   };
 
   update = () => {
+    this.setState({wait: true});
     API.getCurrentUser(this.state.session).then(user => {
       this.setState({currentUser: user});
       if (this.state.user == user) {
         API.getSteps(this.state.session)
-          .then(steps => actions.fillField(steps));
+          .then(steps => {
+            actions.fillField(steps);
+            this.setState({wait: false});
+          });
       }
     });
   };
 
   render() {
     const {field} = this.props;
-    const {user, currentUser, session} = this.state;
+    const {user, currentUser, session, wait} = this.state;
     const fields = range(0, count).map(y => {
       return (
         <View key={y} style={css.row}>
@@ -80,7 +91,6 @@ export default class Field extends React.Component<FieldP, FieldS> {
             const style: any[] = [css.field];
             const item = field.find(e => equal(e.position, x, y));
             if (item) {
-              console.log(item.user);
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
             }
             return <View key={x} style={style}/>;
@@ -93,6 +103,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <View>
           <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
           <Text>Session {session}</Text>
+          <Text>{wait ? 'wait' : ' '}</Text>
           <Button title="Refresh" onPress={this.update}/>
           <View onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
             {fields}
