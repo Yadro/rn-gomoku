@@ -72,7 +72,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
   render() {
     const {field} = this.props;
-    const {user, currentUser} = this.state;
+    const {user, currentUser, session} = this.state;
     const fields = range(0, count).map(y => {
       return (
         <View key={y} style={css.row}>
@@ -92,6 +92,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
         <View>
           <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
+          <Text>Session {session}</Text>
           <Button title="Refresh" onPress={this.update}/>
           <View onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
             {fields}
