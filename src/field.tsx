@@ -10,6 +10,7 @@ import {
 import Svg, {
   G,
   Rect,
+  Circle,
 } from 'react-native-svg';
 import {range} from "./util";
 import store from "./redux/store";
@@ -63,7 +64,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
     actions.add({
       position: touch,
-      user: user
+      user,
     });
     this.setState({wait: true});
     API.postStep({session, user, position: `${touch.x};${touch.y}`})
@@ -105,7 +106,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
               fill = item.user == user ? 'green' : 'blue';
             }
-            return <Rect key={x} x={x * size} y={y * size} width={size} height={size} fill={fill}
+            return <Circle key={x} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2} fill={fill}
                          stroke="grey"
                          strokeWidth=".5"/>;
           })}
@@ -118,15 +119,17 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <Text>Session {session}</Text>
         <Text>{wait ? 'wait' : ' '}</Text>
         <Button title="Refresh" onPress={this.update}/>
-        <ScrollView >
-          <ScrollView horizontal>
-            <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
-              <Svg height={size * count} width={size * count}>
-                {fields}
-              </Svg>
-            </TouchableWithoutFeedback>
+        <View style={{flex: 1, marginTop: 10}}>
+          <ScrollView>
+            <ScrollView horizontal>
+              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
+                <Svg height={size * count + 20} width={size * count + 20} style={css.containerField}>
+                  {fields}
+                </Svg>
+              </TouchableWithoutFeedback>
+            </ScrollView>
           </ScrollView>
-        </ScrollView>
+        </View>
       </View>
     )
   }
@@ -145,11 +148,10 @@ assign({}, {});
 const css = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white'
   },
   containerField: {
-    flex: 1,
-    width: size * count,
-    height: size * count,
+    margin: 10
   },
   row: {
     flexDirection: 'row',
