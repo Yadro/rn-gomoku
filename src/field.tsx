@@ -118,17 +118,15 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <Text>Session {session}</Text>
         <Text>{wait ? 'wait' : ' '}</Text>
         <Button title="Refresh" onPress={this.update}/>
-        <View style={css.container} >
-          <ScrollView >
-            <ScrollView horizontal>
-              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
-                <Svg height={size * count} width={size * count}>
-                  {fields}
-                </Svg>
-              </TouchableWithoutFeedback>
-            </ScrollView>
+        <ScrollView >
+          <ScrollView horizontal>
+            <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
+              <Svg height={size * count} width={size * count}>
+                {fields}
+              </Svg>
+            </TouchableWithoutFeedback>
           </ScrollView>
-        </View>
+        </ScrollView>
       </View>
     )
   }
