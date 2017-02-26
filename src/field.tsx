@@ -7,6 +7,22 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import Svg,{
+  Circle,
+  Ellipse,
+  G,
+  LinearGradient,
+  RadialGradient,
+  Line,
+  Path,
+  Polygon,
+  Polyline,
+  Rect,
+  Symbol,
+  Use,
+  Defs,
+  Stop
+} from 'react-native-svg';
 import {range} from "./util";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
@@ -90,16 +106,17 @@ export default class Field extends React.Component<FieldP, FieldS> {
     const {user, currentUser, session, wait} = this.state;
     const fields = range(0, count).map(y => {
       return (
-        <View key={y} style={css.row}>
+        <Path key={y}>
           {range(0, count).map(x => {
             const style: any[] = [css.field];
             const item = field.find(e => equal(e.position, x, y));
             if (item) {
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
             }
-            return <View key={x} style={style}/>;
+            return <Rect key={x} x={x * size} y={y * size} width={size} height={size}
+                         fill={(item && item.user == user ? 'green' : 'blue') || 'red'}/>;
           })}
-        </View>
+        </Path>
       );
     });
     return (
@@ -109,9 +126,11 @@ export default class Field extends React.Component<FieldP, FieldS> {
           <Text>Session {session}</Text>
           <Text>{wait ? 'wait' : ' '}</Text>
           <Button title="Refresh" onPress={this.update}/>
-          <View onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
+          <Svg onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}
+               height="100"
+               width="100">
             {fields}
-          </View>
+          </Svg>
         </View>
       </TouchableWithoutFeedback>
     )
