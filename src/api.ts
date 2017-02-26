@@ -1,5 +1,6 @@
 class Api {
-  url = 'http://10.0.3.2:3001';
+  // url = 'http://10.0.3.2:3001';
+  url = 'http://gomokus.herokuapp.com';
 
   create() {
     return fetch(this.url + '/create', {method: 'POST'})
@@ -44,14 +45,7 @@ class Api {
   }
 
   postStep(data) {
-    return fetch(this.url + '/step', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    })
+    return this.postJson('/step', data)
       .then(response => response.json())
       .then(responseJson => {
         console.log(responseJson);
@@ -62,14 +56,14 @@ class Api {
       })
   }
 
-  postJson(params, object) {
-    return fetch(this.url + params, {
+  postJson(url, data) {
+    return fetch(this.url + url, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(object)
+      body: JSON.stringify(data)
     });
   }
 }
