@@ -51,6 +51,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
       x: Math.floor(pageX / size),
       y: Math.floor((pageY - y) / size),
     };
+    if (this.props.field.find(e => equal(e.position, touch.x, touch.y))) {
+      return;
+    }
+
     actions.add({
       position: touch,
       user: user
