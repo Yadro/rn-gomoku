@@ -47,16 +47,17 @@ export default class Field extends React.Component<FieldP, FieldS> {
     actions.fillField(API.getSteps(this.state.session));
   }
 
-  fieldPress = ({nativeEvent: {pageX, pageY}}): void => {
+  fieldPress = ({nativeEvent}): void => {
     const {currentUser, user, session} = this.state;
     if (user !== currentUser) return;
-    const {x, y} = this.layout;
+
+    const {locationX, locationY} = nativeEvent;
     const touch = {
-      x: Math.floor((pageX - x) / size),
-      y: Math.floor((pageY - y) / size),
+      x: Math.floor(locationX / size),
+      y: Math.floor(locationY / size),
     };
-    if (x < 0 || x >= count || y < 0 || y <= count) return;
-    if (this.props.field.find(e => equal(e.position, touch.x, touch.y))) {
+    if ((touch.x < 0 || touch.x >= count || touch.y < 0 || touch.y >= count) ||
+      this.props.field.find(e => equal(e.position, touch.x, touch.y))) {
       return;
     }
 
@@ -117,10 +118,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <Text>Session {session}</Text>
         <Text>{wait ? 'wait' : ' '}</Text>
         <Button title="Refresh" onPress={this.update}/>
-        <View style={css.container} onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
+        <View style={css.container} >
           <ScrollView >
             <ScrollView horizontal>
-              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
+              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
                 <Svg height={size * count} width={size * count}>
                   {fields}
                 </Svg>
