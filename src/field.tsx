@@ -7,21 +7,9 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import Svg,{
-  Circle,
-  Ellipse,
+import Svg, {
   G,
-  LinearGradient,
-  RadialGradient,
-  Line,
-  Path,
-  Polygon,
-  Polyline,
   Rect,
-  Symbol,
-  Use,
-  Defs,
-  Stop
 } from 'react-native-svg';
 import {range} from "./util";
 import store from "./redux/store";
@@ -29,8 +17,8 @@ import {actions} from "./redux/actions";
 import {FieldItem, UserEnum} from "./redux/field";
 import {API} from "./api";
 
-const count = 10;
-const size = 20;
+const count = 20;
+const size = 35;
 
 interface FieldP {
   field: FieldItem[];
@@ -62,11 +50,12 @@ export default class Field extends React.Component<FieldP, FieldS> {
   fieldPress = ({nativeEvent: {pageX, pageY}}): void => {
     const {currentUser, user, session} = this.state;
     if (user !== currentUser) return;
-    const {y} = this.layout;
+    const {x, y} = this.layout;
     const touch = {
-      x: Math.floor(pageX / size),
+      x: Math.floor((pageX - x) / size),
       y: Math.floor((pageY - y) / size),
     };
+    if (x < 0 || x >= count || y < 0 || y <= count) return;
     if (this.props.field.find(e => equal(e.position, touch.x, touch.y))) {
       return;
     }
@@ -106,33 +95,40 @@ export default class Field extends React.Component<FieldP, FieldS> {
     const {user, currentUser, session, wait} = this.state;
     const fields = range(0, count).map(y => {
       return (
-        <Path key={y}>
+        <G key={y}>
           {range(0, count).map(x => {
             const style: any[] = [css.field];
             const item = field.find(e => equal(e.position, x, y));
+            let fill = 'white';
             if (item) {
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
+              fill = item.user == user ? 'green' : 'blue';
             }
-            return <Rect key={x} x={x * size} y={y * size} width={size} height={size}
-                         fill={(item && item.user == user ? 'green' : 'blue') || 'red'}/>;
+            return <Rect key={x} x={x * size} y={y * size} width={size} height={size} fill={fill}
+                         stroke="grey"
+                         strokeWidth=".5"/>;
           })}
-        </Path>
+        </G>
       );
     });
     return (
-      <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
-        <View>
-          <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
-          <Text>Session {session}</Text>
-          <Text>{wait ? 'wait' : ' '}</Text>
-          <Button title="Refresh" onPress={this.update}/>
-          <Svg onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}
-               height="100"
-               width="100">
-            {fields}
-          </Svg>
+      <View style={css.container}>
+        <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
+        <Text>Session {session}</Text>
+        <Text>{wait ? 'wait' : ' '}</Text>
+        <Button title="Refresh" onPress={this.update}/>
+        <View style={css.container} onLayout={({nativeEvent}) => this.layout = nativeEvent.layout}>
+          <ScrollView >
+            <ScrollView horizontal>
+              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
+                <Svg height={size * count} width={size * count}>
+                  {fields}
+                </Svg>
+              </TouchableWithoutFeedback>
+            </ScrollView>
+          </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     )
   }
 }
@@ -150,6 +146,11 @@ assign({}, {});
 const css = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerField: {
+    flex: 1,
+    width: size * count,
+    height: size * count,
   },
   row: {
     flexDirection: 'row',
