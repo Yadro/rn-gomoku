@@ -37,8 +37,8 @@ export default class Field extends React.Component<FieldP, FieldS> {
     super(props);
     const {serverInfo: {user}} = store.getState();
     this.state = {
-      user,
-      currentUser: 0,
+      user: UserEnum.server,
+      currentUser: UserEnum.server,
       wait: false,
     };
     props.api.subscribe(this.update);
@@ -65,11 +65,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
       user,
     });
     this.setState({wait: true});
-
     this.props.api.step(`${touch.x};${touch.y}`)
       .then(data => {
         console.log(data);
-        this.setState({wait: false});
+        this.setState({currentUser: UserEnum.client});
       });
   };
 
@@ -83,6 +82,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
         y: +y,
       },
       user: 1,
+    });
+    this.setState({
+      wait: false,
+      currentUser: UserEnum.server
     });
   };
 
@@ -110,7 +113,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
     return (
       <View style={css.container}>
         <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
-        <Text>{wait ? 'send' : ' '}</Text>
+        <Text>{wait ? 'wait' : ' '}</Text>
         <View style={{flex: 1, marginTop: 10}}>
           <ScrollView>
             <ScrollView horizontal>
