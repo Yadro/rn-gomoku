@@ -9,23 +9,24 @@ import Field from "./field";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {UserEnum} from "./redux/field";
-import {API} from "./api";
+import ServerApi from "./api";
 
 interface AppS {
   view: string;
-  session;
+  room;
   sessionInfo;
   field;
 }
 export default class App extends React.Component<any, AppS> {
 
+  api: ServerApi;
   unsubscribe;
 
   constructor(props) {
     super(props);
     this.state = {
       view: 'choose',
-      session: null,
+      room: null,
       sessionInfo: {},
       field: []
     };
@@ -46,7 +47,7 @@ export default class App extends React.Component<any, AppS> {
   }
 
   onChangeSession = ({nativeEvent: {text}}) => {
-    this.setState({session: text});
+    this.setState({room: text});
   };
 
   connectBtn = (session) => () => {
@@ -55,22 +56,21 @@ export default class App extends React.Component<any, AppS> {
   };
 
   serverBtn = () => {
-    API.create().then(session => {
-      actions.asServer(+session);
-      this.setState({view: 'game'});
-    })
+    this.api = new ServerApi();
+    this.api.create();
+    this.setState({view: 'game'});
   };
 
-  _renderChoose = session => {
+  _renderChoose = (room) => {
     return (
       <View>
         <View>
           <Button title='Server' onPress={this.serverBtn} />
         </View>
         <View>
-          <TextInput value={session}
+          <TextInput value={room}
                      onChange={this.onChangeSession}/>
-          <Button title='Connect' onPress={this.connectBtn(session)} />
+          <Button title='Connect' onPress={this.connectBtn(room)} />
         </View>
       </View>
     )
@@ -78,14 +78,14 @@ export default class App extends React.Component<any, AppS> {
 
   _renderField = () => {
     const {field} = this.state;
-    return <Field field={field}/>
+    return <Field field={field} api={this.api}/>
   };
 
   render() {
-    const {session, view} = this.state;
+    const {room, view} = this.state;
     return <View style={{flex: 1}}>
       {view == 'choose' ?
-        this._renderChoose(session) :
+        this._renderChoose(room) :
         this._renderField()
       }
     </View>

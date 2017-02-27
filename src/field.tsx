@@ -16,16 +16,16 @@ import {range} from "./util";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {FieldItem, UserEnum} from "./redux/field";
-import {API} from "./api";
+import ServerApi from "./api";
 
 const count = 20;
 const size = 35;
 
 interface FieldP {
+  api: ServerApi;
   field: FieldItem[];
 }
 interface FieldS {
-  session;
   user: UserEnum;
   currentUser;
   wait;
@@ -33,24 +33,22 @@ interface FieldS {
 export default class Field extends React.Component<FieldP, FieldS> {
   layout;
 
-  constructor(props) {
+  constructor(props: FieldP) {
     super(props);
-    const {serverInfo: {user, session}} = store.getState();
+    const {serverInfo: {user}} = store.getState();
     this.state = {
-      session,
       user,
       currentUser: 0,
       wait: false,
     };
+    props.api.subscribe(this.update);
   }
 
   componentWillMount() {
-    actions.fillField(API.getSteps(this.state.session));
   }
 
   fieldPress = ({nativeEvent}): void => {
-    const {currentUser, user, session} = this.state;
-    if (user !== currentUser) return;
+    const {currentUser, user} = this.state;
 
     const {locationX, locationY} = nativeEvent;
     const touch = {
@@ -67,34 +65,30 @@ export default class Field extends React.Component<FieldP, FieldS> {
       user,
     });
     this.setState({wait: true});
-    API.postStep({session, user, position: `${touch.x};${touch.y}`})
-      .then(res => {
-        this.setState({currentUser: res.user});
-        return API.getSteps(session);
-      })
-      .then(steps => {
-        actions.fillField(steps);
+
+    this.props.api.step(`${touch.x};${touch.y}`)
+      .then(data => {
+        console.log(data);
         this.setState({wait: false});
       });
   };
 
-  update = () => {
-    this.setState({wait: true});
-    API.getCurrentUser(this.state.session).then(user => {
-      this.setState({currentUser: user});
-      if (this.state.user == user) {
-        API.getSteps(this.state.session)
-          .then(steps => {
-            actions.fillField(steps);
-            this.setState({wait: false});
-          });
-      }
+  update = (data) => {
+    console.log(data);
+    // todo
+    const [x, y] = data.position.split(';');
+    actions.add({
+      position: {
+        x: +x,
+        y: +y,
+      },
+      user: 1,
     });
   };
 
   render() {
     const {field} = this.props;
-    const {user, currentUser, session, wait} = this.state;
+    const {user, currentUser, wait} = this.state;
     const fields = range(0, count).map(y => {
       return (
         <G key={y}>
@@ -116,9 +110,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
     return (
       <View style={css.container}>
         <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
-        <Text>Session {session}</Text>
-        <Text>{wait ? 'wait' : ' '}</Text>
-        <Button title="Refresh" onPress={this.update}/>
+        <Text>{wait ? 'send' : ' '}</Text>
         <View style={{flex: 1, marginTop: 10}}>
           <ScrollView>
             <ScrollView horizontal>
