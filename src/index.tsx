@@ -60,6 +60,7 @@ export default class App extends React.Component<any, AppS> {
   serverBtn = () => {
     this.api = new ServerApi();
     this.api.create().then(room => {
+      console.log('created', room);
       actions.asServer(room);
       this.setState({view: 'game'});
     })
@@ -69,12 +70,12 @@ export default class App extends React.Component<any, AppS> {
     return (
       <View style={{margin: 10}}>
         <View>
-          <Button title='Server' onPress={this.serverBtn} />
+          <Button title='Server' onPress={this.serverBtn}/>
         </View>
         <View>
           <TextInput value={room}
                      onChange={this.onChangeSession}/>
-          <Button title='Connect' onPress={this.connectBtn(room)} />
+          <Button title='Connect' onPress={this.connectBtn(room)}/>
         </View>
       </View>
     )

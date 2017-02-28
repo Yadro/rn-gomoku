@@ -7,11 +7,6 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import Svg, {
-  G,
-  Rect,
-  Circle,
-} from 'react-native-svg';
 import {range} from "./util";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
@@ -19,6 +14,7 @@ import {FieldItem, UserEnum} from "./redux/field";
 
 const count = 20;
 const size = 35;
+const sizeHalf = size / 2;
 
 interface FieldP {
   api;
@@ -107,30 +103,28 @@ export default class Field extends React.Component<FieldP, FieldS> {
   render() {
     const {field} = this.props;
     const {user, currentUser, wait, room, num} = this.state;
-
-    const table = [];
-    range(0, count + 1).forEach(y => {
-      range(0, count + 1).forEach(x => {
-        table.push(
-          <Rect key={`t_${x};${y}`} x={x * size - size / 2} y={y * size - size / 2} width={size}
-                height={size} fill="#F0F0F0" stroke="grey" strokeWidth=".5"/>);
+    const table = range(0, count + 1).map(y =>
+      range(0, count + 1).map(x => {
+        return (
+          <View key={`t_${x};${y}`}
+                style={[css.field, {position: 'absolute', top: x * size - sizeHalf, left: y * size - sizeHalf}]}/>
+        );
       })
-    });
+    );
     const fields = [];
-    range(0, count).map(y => {
-      range(0, count).map(x => {
+    range(0, count).forEach(y => {
+      return range(0, count).forEach(x => {
         const style: any[] = [css.field];
         const item = field.find(e => equal(e.position, x, y));
-        let fill = 'white';
+        let fill = {backgroundColor: 'white'};
         if (item) {
-          style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
-          fill = item.user == user ? 'white' : 'black';
+          fill = {backgroundColor: item.user == user ? 'white' : 'black'};
           fields.push(
-            <Circle key={`s_${x};${y}`} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2}
-                    fill={fill} stroke="grey" strokeWidth=".5"/>
+            <View key={`s_${x};${y}`}
+                  style={[css.fieldCircle, fill, {position: 'absolute', top: x * size, left: y * size}]}/>
           );
         }
-      })
+      });
     });
     return (
       <View style={css.container}>
@@ -140,18 +134,18 @@ export default class Field extends React.Component<FieldP, FieldS> {
           <Text>{wait ? 'wait' : ' '}</Text>
           <Button title={"Toggle button" + num} onPress={() => this.setState({num: num + 1})}/>
         </View>
-        <View style={{flex: 1}}>
-          <ScrollView>
-            <ScrollView horizontal>
-              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
-                <Svg height={size * count + 20} width={size * count + 20} style={css.containerField}>
+        <ScrollView>
+          <ScrollView horizontal>
+            <View style={{width: size * count + 20, height: size * count + 20}}>
+              <TouchableWithoutFeedback style={{width: size * count + 20, height: size * count + 20}} onPress={this.fieldPress}>
+                <View style={{width: size * count + 20, height: size * count + 20}}>
                   {table}
                   {fields}
-                </Svg>
+                </View>
               </TouchableWithoutFeedback>
-            </ScrollView>
+            </View>
           </ScrollView>
-        </View>
+        </ScrollView>
       </View>
     )
   }
@@ -186,7 +180,14 @@ const css = StyleSheet.create({
   },
   field: {
     borderWidth: .5,
-    borderColor: 'black',
+    borderColor: 'grey',
+    width: size,
+    height: size,
+  },
+  fieldCircle: {
+    borderWidth: .5,
+    borderColor: 'grey',
+    borderRadius: sizeHalf,
     width: size,
     height: size,
   },

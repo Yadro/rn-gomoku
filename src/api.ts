@@ -49,6 +49,10 @@ export class ServerApi {
   subscribe(onUpdate) {
     this.onUpdate = onUpdate;
   }
+
+  ping(fn) {
+    this.socket.emit('my_ping', fn);
+  }
 }
 
 export class ClientApi {
