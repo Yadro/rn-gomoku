@@ -103,7 +103,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <G key={y}>
           {range(0, count + 1).map(x => {
             return <Rect key={x} x={x * size - size / 2} y={y * size - size / 2} width={size} height={size}
-                         fill="white" stroke="grey" strokeWidth=".5"/>
+                         fill="#F0F0F0" stroke="grey" strokeWidth=".5"/>
           })}
         </G>
       )
@@ -164,7 +164,7 @@ assign({}, {});
 const css = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: '#f0f0f0'
   },
   info: {
     padding: 10,
