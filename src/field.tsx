@@ -107,10 +107,18 @@ export default class Field extends React.Component<FieldP, FieldS> {
             if (item) {
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
               fill = item.user == user ? 'green' : 'blue';
+              return (
+                <G key={x}>
+                  <Rect key={'r' + x} x={x * size } y={y * size} width={size} height={size}
+                        fill="white" stroke="grey" strokeWidth=".5"/>
+                  <Circle key={'c' + x} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2}
+                          fill={fill} stroke="grey" strokeWidth=".5"/>
+                </G>
+
+              )
             }
-            return <Circle key={x} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2} fill={fill}
-                         stroke="grey"
-                         strokeWidth=".5"/>;
+            return <Rect key={x} x={x * size } y={y * size} width={size} height={size}
+                         fill={fill} stroke="grey" strokeWidth=".5"/>
           })}
         </G>
       );
@@ -123,7 +131,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
         <View style={{flex: 1, marginTop: 10}}>
           <ScrollView>
             <ScrollView horizontal>
-              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress} >
+              <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
                 <Svg height={size * count + 20} width={size * count + 20} style={css.containerField}>
                   {fields}
                 </Svg>
