@@ -9,7 +9,7 @@ import Field from "./field";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {UserEnum} from "./redux/field";
-import ServerApi from "./api";
+import {ServerApi, ClientApi} from "./api";
 
 interface AppS {
   view: string;
@@ -19,7 +19,7 @@ interface AppS {
 }
 export default class App extends React.Component<any, AppS> {
 
-  api: ServerApi;
+  api;
   unsubscribe;
 
   constructor(props) {
@@ -50,20 +50,24 @@ export default class App extends React.Component<any, AppS> {
     this.setState({room: text});
   };
 
-  connectBtn = (session) => () => {
-    actions.asClient(+session);
+  connectBtn = (room) => () => {
+    actions.asClient(room);
+    this.api = new ClientApi();
+    this.api.join(room);
     this.setState({view: 'game'});
   };
 
   serverBtn = () => {
     this.api = new ServerApi();
-    this.api.create();
-    this.setState({view: 'game'});
+    this.api.create().then(room => {
+      actions.asServer(room);
+      this.setState({view: 'game'});
+    })
   };
 
   _renderChoose = (room) => {
     return (
-      <View>
+      <View style={{margin: 10}}>
         <View>
           <Button title='Server' onPress={this.serverBtn} />
         </View>

@@ -1,15 +1,15 @@
-
+import {UserEnum} from "./field";
 
 export interface ServerInfo {
-  session;
-  user;
+  room;
+  user: UserEnum;
 }
 
 export default (state: ServerInfo, actions): ServerInfo => {
   const newState = Object.assign({}, state);
   switch (actions.type) {
     case 'SET-PARAM':
-      newState.session = actions.session;
+      newState.room = actions.room;
       newState.user = actions.user;
       return newState;
   }

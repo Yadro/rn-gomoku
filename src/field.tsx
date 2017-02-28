@@ -16,16 +16,16 @@ import {range} from "./util";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {FieldItem, UserEnum} from "./redux/field";
-import ServerApi from "./api";
 
 const count = 20;
 const size = 35;
 
 interface FieldP {
-  api: ServerApi;
+  api;
   field: FieldItem[];
 }
 interface FieldS {
+  room;
   user: UserEnum;
   currentUser;
   wait;
@@ -35,9 +35,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
   constructor(props: FieldP) {
     super(props);
-    const {serverInfo: {user}} = store.getState();
+    const {serverInfo: {user, room}} = store.getState();
     this.state = {
-      user: UserEnum.server,
+      room,
+      user,
       currentUser: UserEnum.server,
       wait: false,
     };
@@ -49,6 +50,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
   fieldPress = ({nativeEvent}): void => {
     const {currentUser, user} = this.state;
+    if (currentUser != user) return;
 
     const {locationX, locationY} = nativeEvent;
     const touch = {
@@ -68,11 +70,14 @@ export default class Field extends React.Component<FieldP, FieldS> {
     this.props.api.step(`${touch.x};${touch.y}`)
       .then(data => {
         console.log(data);
-        this.setState({currentUser: UserEnum.client});
+        this.setState({
+          currentUser: user == UserEnum.server ? UserEnum.client : UserEnum.server
+        });
       });
   };
 
   update = (data) => {
+    const {user} = this.state;
     console.log(data);
     // todo
     const [x, y] = data.position.split(';');
@@ -81,17 +86,17 @@ export default class Field extends React.Component<FieldP, FieldS> {
         x: +x,
         y: +y,
       },
-      user: 1,
+      user: user == UserEnum.server ? UserEnum.client : UserEnum.server,
     });
     this.setState({
       wait: false,
-      currentUser: UserEnum.server
+      currentUser: user
     });
   };
 
   render() {
     const {field} = this.props;
-    const {user, currentUser, wait} = this.state;
+    const {user, currentUser, wait, room} = this.state;
     const fields = range(0, count).map(y => {
       return (
         <G key={y}>
@@ -112,6 +117,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
     });
     return (
       <View style={css.container}>
+        <Text>{'Room ' + room}</Text>
         <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
         <Text>{wait ? 'wait' : ' '}</Text>
         <View style={{flex: 1, marginTop: 10}}>

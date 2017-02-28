@@ -14,11 +14,11 @@ export const actions = {
     store.dispatch({type: 'CLEAR'});
   },
 
-  asClient(session) {
-    store.dispatch({type: 'SET-PARAM', session, user: UserEnum.client});
+  asClient(room) {
+    store.dispatch({type: 'SET-PARAM', room, user: UserEnum.client});
   },
 
-  asServer(session) {
-    store.dispatch({type: 'SET-PARAM', session, user: UserEnum.server});
+  asServer(room) {
+    store.dispatch({type: 'SET-PARAM', room, user: UserEnum.server});
   },
 };
