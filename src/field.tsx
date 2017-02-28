@@ -97,6 +97,17 @@ export default class Field extends React.Component<FieldP, FieldS> {
   render() {
     const {field} = this.props;
     const {user, currentUser, wait, room} = this.state;
+
+    const table = range(0, count + 1).map(y => {
+      return (
+        <G key={y}>
+          {range(0, count + 1).map(x => {
+            return <Rect key={x} x={x * size - size / 2} y={y * size - size / 2} width={size} height={size}
+                         fill="white" stroke="grey" strokeWidth=".5"/>
+          })}
+        </G>
+      )
+    });
     const fields = range(0, count).map(y => {
       return (
         <G key={y}>
@@ -106,33 +117,29 @@ export default class Field extends React.Component<FieldP, FieldS> {
             let fill = 'white';
             if (item) {
               style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
-              fill = item.user == user ? 'green' : 'blue';
+              fill = item.user == user ? 'white' : 'black';
               return (
-                <G key={x}>
-                  <Rect key={'r' + x} x={x * size } y={y * size} width={size} height={size}
-                        fill="white" stroke="grey" strokeWidth=".5"/>
-                  <Circle key={'c' + x} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2}
-                          fill={fill} stroke="grey" strokeWidth=".5"/>
-                </G>
-
+                <Circle key={x} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2}
+                        fill={fill} stroke="grey" strokeWidth=".5"/>
               )
             }
-            return <Rect key={x} x={x * size } y={y * size} width={size} height={size}
-                         fill={fill} stroke="grey" strokeWidth=".5"/>
           })}
         </G>
       );
     });
     return (
       <View style={css.container}>
-        <Text>{'Room ' + room}</Text>
-        <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
-        <Text>{wait ? 'wait' : ' '}</Text>
-        <View style={{flex: 1, marginTop: 10}}>
+        <View style={css.info}>
+          <Text>{'Room ' + room}</Text>
+          <Text>{user == currentUser ? 'You' : 'Opponent'}</Text>
+          <Text>{wait ? 'wait' : ' '}</Text>
+        </View>
+        <View style={{flex: 1}}>
           <ScrollView>
             <ScrollView horizontal>
               <TouchableWithoutFeedback style={css.container} onPress={this.fieldPress}>
                 <Svg height={size * count + 20} width={size * count + 20} style={css.containerField}>
+                  {table}
                   {fields}
                 </Svg>
               </TouchableWithoutFeedback>
@@ -158,6 +165,11 @@ const css = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white'
+  },
+  info: {
+    padding: 10,
+    marginBottom: 10,
+    elevation: 5,
   },
   containerField: {
     margin: 10
