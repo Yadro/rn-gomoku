@@ -17,9 +17,10 @@ interface AppS {
   sessionInfo;
   field;
 }
+
 export default class App extends React.Component<any, AppS> {
 
-  api;
+  api: ServerApi;
   unsubscribe;
 
   constructor(props) {
@@ -52,16 +53,21 @@ export default class App extends React.Component<any, AppS> {
 
   connectBtn = (room) => () => {
     actions.asClient(room);
-    this.api = new ClientApi();
-    this.api.join(room);
-    this.setState({view: 'game'});
+    this.api = new ServerApi('client');
+    this.api.connect(room).then(room => {
+      this.setState({view: 'game'});
+    }).catch(e => {
+      console.error('rejected');
+    });
   };
 
   serverBtn = () => {
-    this.api = new ServerApi();
-    this.api.create().then(room => {
+    this.api = new ServerApi('server');
+    this.api.connect().then(room => {
       actions.asServer(room);
       this.setState({view: 'game'});
+    }).catch(e => {
+      console.error('rejected')
     })
   };
 

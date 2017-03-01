@@ -1,8 +1,10 @@
 import {UserEnum} from "./field";
 
+type GameStatus = 'win' | '';
 export interface ServerInfo {
   room;
   user: UserEnum;
+  status: GameStatus;
 }
 
 export default (state: ServerInfo, actions): ServerInfo => {
