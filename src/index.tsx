@@ -9,7 +9,7 @@ import Field from "./field";
 import store from "./redux/store";
 import {actions} from "./redux/actions";
 import {UserEnum} from "./redux/field";
-import {ServerApi, ClientApi} from "./api";
+import ServerApi from "./api";
 
 interface AppS {
   view: string;

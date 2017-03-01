@@ -6,7 +6,7 @@ const steps = [];
 const url = 'wss://gomokus.herokuapp.com';
 
 export type TypeConnect = 'server' | 'client';
-export class ServerApi {
+export default class ServerApi {
   socket;
   room;
   onUpdate;
