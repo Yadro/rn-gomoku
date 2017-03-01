@@ -3,6 +3,7 @@ import {
   View,
   TouchableWithoutFeedback,
   Text,
+  Alert,
   Button,
   ScrollView,
   StyleSheet,
@@ -30,6 +31,7 @@ interface FieldS {
   currentUser;
   wait;
   num;
+  status;
 }
 export default class Field extends React.Component<FieldP, FieldS> {
   layout;
@@ -44,6 +46,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       user,
       currentUser: UserEnum.server,
       wait: false,
+      status: 'process',
     };
     props.api.subscribe(this.update);
   }
@@ -84,6 +87,13 @@ export default class Field extends React.Component<FieldP, FieldS> {
   update = (data) => {
     const {user} = this.state;
     console.log(data);
+    if (data.status == 'lose') {
+      Alert.alert('You lose', 'Continue', [{text: 'okay :c'}]);
+      return;
+    } else if (data.status == 'win') {
+      Alert.alert('You Win', 'Continue', [{text: 'yeah'}]);
+      return;
+    }
     // todo
     const [x, y] = data.position.split(';');
     actions.add({

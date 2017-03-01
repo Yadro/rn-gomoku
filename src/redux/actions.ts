@@ -21,4 +21,8 @@ export const actions = {
   asServer(room) {
     store.dispatch({type: 'SET-PARAM', room, user: UserEnum.server});
   },
+
+  setStatus(status) {
+    store.dispatch({type: 'STATUS', status});
+  }
 };

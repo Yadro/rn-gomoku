@@ -27,7 +27,9 @@ export class ServerApi {
     });
 
     this.socket.on('status', (data) => {
-      if (data.status == 'active') {
+      if (['win', 'lose'].some(e => e == data.status)) {
+        this.onUpdate && this.onUpdate(data);
+      } else if (data.status == 'active') {
         steps.push(data.position);
         this.onUpdate && this.onUpdate(data);
       }
