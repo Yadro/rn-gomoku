@@ -11,6 +11,7 @@ import {
 import Svg, {
   G,
   Rect,
+  Line,
   Circle,
 } from 'react-native-svg';
 import {range} from "./util";
@@ -120,11 +121,19 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
     const table = [];
     range(0, count + 1).forEach(y => {
-      range(0, count + 1).forEach(x => {
-        table.push(
-          <Rect key={`t_${x};${y}`} x={x * size - size / 2} y={y * size - size / 2} width={size}
-                height={size} fill="#F0F0F0" stroke="grey" strokeWidth=".5"/>);
-      })
+      table.push(
+        <Line key={`t_y_${y}`}
+              x1={0} y1={y * size - size / 2}
+              x2={count * size - size / 2} y2={y * size - size / 2}
+              stroke="grey" strokeWidth="1"/>);
+    });
+    range(0, count + 1).forEach(x => {
+      table.push(
+        <Line key={`t_x_${x}`}
+              x1={x * size - size / 2} y1={0}
+              x2={x * size - size / 2} y2={count * size - size / 2}
+              stroke="grey" strokeWidth="1"/>);
+
     });
     const fields = [];
     range(0, count).map(y => {
