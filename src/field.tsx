@@ -138,12 +138,10 @@ export default class Field extends React.Component<FieldP, FieldS> {
     const fields = [];
     range(0, count).map(y => {
       range(0, count).map(x => {
-        const style: any[] = [css.field];
         const item = field.find(e => equal(e.position, x, y));
         let fill = 'white';
         if (item) {
-          style.push(item.user == user ? css.fieldActiveYou : css.fieldActive);
-          fill = item.user == user ? 'white' : 'black';
+          fill = item.user == UserEnum.server ? 'white' : 'black';
           fields.push(
             <Circle key={`s_${x};${y}`} cx={x * size + size / 2} cy={y * size + size / 2} r={size / 2}
                     fill={fill} stroke="grey" strokeWidth=".5"/>
