@@ -35,6 +35,10 @@ interface FieldS {
   status;
 }
 export default class Field extends React.Component<FieldP, FieldS> {
+  static navigationOptions = {
+    title: 'Gomoku',
+  };
+
   layout;
   begin;
 

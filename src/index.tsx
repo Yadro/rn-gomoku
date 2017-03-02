@@ -17,6 +17,10 @@ interface AppS {
 
 export default class App extends React.Component<any, AppS> {
 
+  static navigationOptions = {
+    title: 'Gomoku',
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -56,14 +60,13 @@ export default class App extends React.Component<any, AppS> {
   render() {
     const {room} = this.state;
     return <View style={{margin: 10}}>
-      <View>
-        <Button title='Server' onPress={this.serverBtn}/>
-      </View>
-      <View>
+      <Button title='Server' onPress={this.serverBtn}/>
+      <View style={{marginTop: 10, marginBottom: 10}}>
         <TextInput value={room}
                    onChange={this.onChangeSession}/>
         <Button title='Connect' onPress={this.connectBtn(room)}/>
       </View>
+      <Button title='List of server' onPress={this.serverBtn} />
     </View>
   }
 }
