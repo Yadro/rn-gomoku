@@ -5,6 +5,7 @@ export interface ServerInfo {
   room;
   user: UserEnum;
   status: GameStatus;
+  api;
 }
 
 export default (state: ServerInfo, actions): ServerInfo => {
@@ -14,6 +15,7 @@ export default (state: ServerInfo, actions): ServerInfo => {
       newState.status = actions.status;
       return newState;
     case 'SET-PARAM':
+      newState.api = actions.api;
       newState.room = actions.room;
       newState.user = actions.user;
       return newState;

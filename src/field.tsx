@@ -40,7 +40,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
 
   constructor(props: FieldP) {
     super(props);
-    const {serverInfo: {user, room}} = store.getState();
+    const {serverInfo: {user, room, api}} = store.getState();
     this.state = {
       num: 0,
       room,
@@ -49,7 +49,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
       wait: false,
       status: 'process',
     };
-    props.api.subscribe(this.update);
+    api.subscribe(this.update);
   }
 
   componentWillMount() {
@@ -60,13 +60,14 @@ export default class Field extends React.Component<FieldP, FieldS> {
     const {currentUser, user} = this.state;
     if (currentUser != user) return;
 
+    const {serverInfo: {api}, field} = store.getState();
     const {locationX, locationY} = nativeEvent;
     const touch = {
       x: Math.floor(locationX / size),
       y: Math.floor(locationY / size),
     };
     if ((touch.x < 0 || touch.x >= count || touch.y < 0 || touch.y >= count) ||
-      this.props.field.find(e => equal(e.position, touch.x, touch.y))) {
+      field.find(e => equal(e.position, touch.x, touch.y))) {
       return;
     }
 
@@ -76,7 +77,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
     });
     this.setState({wait: true});
 
-    this.props.api.step(`${touch.x};${touch.y}`)
+    api.step(`${touch.x};${touch.y}`)
       .then(data => {
         console.log(data);
         this.setState({
@@ -116,7 +117,7 @@ export default class Field extends React.Component<FieldP, FieldS> {
   }
 
   render() {
-    const {field} = this.props;
+    const {field} = store.getState();
     const {user, currentUser, wait, room, num} = this.state;
 
     const table = [];

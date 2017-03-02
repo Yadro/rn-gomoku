@@ -5,10 +5,7 @@ import {
   Button,
   TextInput,
 } from 'react-native';
-import Field from "./field";
-import store from "./redux/store";
 import {actions} from "./redux/actions";
-import {UserEnum} from "./redux/field";
 import ServerApi from "./api";
 
 interface AppS {
@@ -20,9 +17,6 @@ interface AppS {
 
 export default class App extends React.Component<any, AppS> {
 
-  api: ServerApi;
-  unsubscribe;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -33,71 +27,43 @@ export default class App extends React.Component<any, AppS> {
     };
   }
 
-  componentWillMount() {
-    this.unsubscribe = store.subscribe(() => {
-      const {field, sessionInfo} = store.getState();
-      this.setState({
-        field,
-        sessionInfo,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
   onChangeSession = ({nativeEvent: {text}}) => {
     this.setState({room: text});
   };
 
   connectBtn = (room) => () => {
-    actions.asClient(room);
-    this.api = new ServerApi('client');
-    this.api.connect(room).then(room => {
-      this.setState({view: 'game'});
+    const {navigate} = this.props.navigation;
+    const api = new ServerApi('client');
+    actions.asClient(room, api);
+    api.connect(room).then(room => {
+      navigate('Game');
     }).catch(e => {
-      console.error('rejected');
+      console.error(e);
     });
   };
 
   serverBtn = () => {
-    this.api = new ServerApi('server');
-    this.api.connect().then(room => {
-      actions.asServer(room);
-      this.setState({view: 'game'});
+    const {navigate} = this.props.navigation;
+    const api = new ServerApi('server');
+    api.connect().then(room => {
+      actions.asServer(room, api);
+      navigate('Game');
     }).catch(e => {
-      console.error('rejected')
+      console.error(e)
     })
   };
 
-  _renderChoose = (room) => {
-    return (
-      <View style={{margin: 10}}>
-        <View>
-          <Button title='Server' onPress={this.serverBtn} />
-        </View>
-        <View>
-          <TextInput value={room}
-                     onChange={this.onChangeSession}/>
-          <Button title='Connect' onPress={this.connectBtn(room)} />
-        </View>
-      </View>
-    )
-  };
-
-  _renderField = () => {
-    const {field} = this.state;
-    return <Field field={field} api={this.api}/>
-  };
-
   render() {
-    const {room, view} = this.state;
-    return <View style={{flex: 1}}>
-      {view == 'choose' ?
-        this._renderChoose(room) :
-        this._renderField()
-      }
+    const {room} = this.state;
+    return <View style={{margin: 10}}>
+      <View>
+        <Button title='Server' onPress={this.serverBtn}/>
+      </View>
+      <View>
+        <TextInput value={room}
+                   onChange={this.onChangeSession}/>
+        <Button title='Connect' onPress={this.connectBtn(room)}/>
+      </View>
     </View>
   }
 }

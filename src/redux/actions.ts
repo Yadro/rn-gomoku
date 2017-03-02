@@ -14,12 +14,12 @@ export const actions = {
     store.dispatch({type: 'CLEAR'});
   },
 
-  asClient(room) {
-    store.dispatch({type: 'SET-PARAM', room, user: UserEnum.client});
+  asClient(room, api) {
+    store.dispatch({type: 'SET-PARAM', api, room, user: UserEnum.client});
   },
 
-  asServer(room) {
-    store.dispatch({type: 'SET-PARAM', room, user: UserEnum.server});
+  asServer(room, api) {
+    store.dispatch({type: 'SET-PARAM', api, room, user: UserEnum.server});
   },
 
   setStatus(status) {

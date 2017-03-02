@@ -12,6 +12,7 @@ let store = createStore(
     serverInfo: {
       session: -1,
       user: -1,
+      api: null,
     }
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__({/* options */})
